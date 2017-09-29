@@ -14,6 +14,7 @@ import java.util.UUID;
 
 import static config.JsonMapper.jsonAsString;
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.*;
 
 
 public class BaseTest extends Configuration{
@@ -36,6 +37,8 @@ public class BaseTest extends Configuration{
     }
 
     public static Response postBasestate (int opNumber){
+
+        System.out.println(RestAssured.baseURI  + "/kiz/basestate/" + opNumber);
         System.out.println(jsonAsString(createBody(opNumber)));
           Response response = null;
           if (opNumber < 100) {
@@ -45,7 +48,7 @@ public class BaseTest extends Configuration{
                       when().
                       post("/kiz/basestate/" + opNumber).
                       then().
-                      statusCode(200).
+                      //statusCode(200).
                       extract().response();
           } else {
               response = given().
@@ -57,7 +60,37 @@ public class BaseTest extends Configuration{
                       statusCode(200).
                       extract().response();
           }
+            System.out.println(response.body().asString());
            return response;
+    }
+
+    public static Response checkAccept(){
+        Response response = given().
+                    contentType("application/json").
+                when().
+                    get("/kiz/result/" + QUERY_ID).
+                then().
+                    statusCode(200).
+                    body("kizCount", equalTo(KIZ_COUNT)).
+                    body("code", equalTo(0)).
+                    body("brokenKizCount", equalTo(0)).
+                extract().response();
+        System.out.println(response.body().asString());
+        return response;
+    }
+
+    public static Response checkReject(){
+        Response response = given().
+                contentType("application/json").
+                when().
+                get("/kiz/result/" + QUERY_ID).
+                then().
+                statusCode(200).
+                body("kizCount", equalTo(KIZ_COUNT)).
+                body("brokenKizCount", equalTo(KIZ_COUNT)).
+                extract().response();
+        System.out.println(response.body().asString());
+        return response;
     }
 
     private static Basestate createBody (int opNumber){

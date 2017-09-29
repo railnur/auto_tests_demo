@@ -58,7 +58,7 @@ public class PropsGenerator extends Configuration{
                 props.setInvoiceDate(INVOICE_DATE);
                 break;
             case 25:
-                props.setContractType(CONTRACT_TYPE);
+                props.setControlType(CONTROL_TYPE);
                 props.setDocNum(DOC_NUM);
                 props.setDocDate(DOC_DATE);
                 props.setCustomProcedureCode(CUSTOM_PROCEDURE_CODE);

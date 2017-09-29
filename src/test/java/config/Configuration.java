@@ -18,7 +18,7 @@ public class Configuration {
     public static final String DOC_DATE = "2017-08-09";
     public static final String INVOICE_DATE = "2017-08-01";
     public static final String INVOICE_NUM = "123/07/2017";
-    public static final int CONTRACT_TYPE = 2;
+    public static final int CONTRACT_TYPE = 1;
     public static final int CUSTOM_PROCEDURE_CODE = 4;
     public static final String GTD_CUSTOMS_CODE = "12";
     public static final String GTD_REG_DATE = "2017-08-01";
@@ -27,7 +27,7 @@ public class Configuration {
     public static final int SOURCE_TYPE = 1;
     public static final int SHIPMENT_TYPE = 1;
     public static final int RECEIVING_TYPE = 1;
-    public static final int ORDER_TYPE = 1;
+    public static final int ORDER_TYPE = 2;
     public static int WITHDRAWAL_TYPE = 501;
     public static final int CONTROL_TYPE = 1;
 
