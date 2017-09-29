@@ -37,7 +37,9 @@ import java.util.Map;
     "withdrawal_type",
     "sscc",
     "prescription_num",
-    "prescription_date"
+    "prescription_date",
+    "use_doc_num",
+    "use_doc_date"
 })
 public class Properties {
 
@@ -103,6 +105,10 @@ public class Properties {
     private String prescriptionNum;
     @JsonProperty("prescription_date")
     private String prescriptionDate;
+    @JsonProperty("use_doc_num")
+    private String useDocNum;
+    @JsonProperty("use_doc_date")
+    private String useDocDate;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -695,6 +701,37 @@ public class Properties {
 
     public Properties withPrescriptionDate(String prescriptionDate) {
         this.prescriptionDate = prescriptionDate;
+        return this;
+    }
+
+
+    @JsonProperty("use_doc_num")
+    public String getUseDocNum() {
+        return useDocNum;
+    }
+
+    @JsonProperty("use_doc_num")
+    public void setUseDocNum(String useDocNum) {
+        this.useDocNum = useDocNum;
+    }
+
+    public Properties withUseDocNum(String useDocNum) {
+        this.useDocNum = useDocNum;
+        return this;
+    }
+
+    @JsonProperty("use_doc_date")
+    public String getUseDocDate() {
+        return useDocDate;
+    }
+
+    @JsonProperty("use_doc_date")
+    public void setUseDocDate(String useDocDate) {
+        this.useDocDate = useDocDate;
+    }
+
+    public Properties withUseDocDate(String useDocDate) {
+        this.useDocDate = useDocDate;
         return this;
     }
 

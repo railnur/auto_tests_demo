@@ -73,6 +73,7 @@ public class BaseTest extends Configuration{
             case 52:
             case 301:
             case 305:
+            case 306:
                 bst = new Basestate(QUERY_ID, KIZ_LIST, PROPS.getProps(opNumber));
                 break;
             case 23:
@@ -86,6 +87,7 @@ public class BaseTest extends Configuration{
                 break;
             default:
                 bst = new Basestate();
+                break;
         }
 
         return bst;

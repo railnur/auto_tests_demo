@@ -15,8 +15,8 @@ public class EndPackingTest extends BaseTest {
 
         postBasestate(11);
         postBasestate(12);
-        postBasestate(31);
-        postBasestate(32);
+        postBasestate(306);
+        //postBasestate(52);
 
     }
 }

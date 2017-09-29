@@ -95,6 +95,9 @@ public class PropsGenerator extends Configuration{
             case 305:
                 props.setPrescriptionNum(DOC_NUM);
                 props.setPrescriptionDate(DOC_DATE);
+            case 306:
+                props.setUseDocDate(DOC_DATE);
+                props.setUseDocNum(DOC_NUM);
         }
 
         return props;
