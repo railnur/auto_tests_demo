@@ -7,6 +7,8 @@ import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import jsonschemas.basestate.Basestate;
 import jsonschemas.basestate.Kiz;
+import org.junit.*;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +16,7 @@ import java.util.UUID;
 
 import static config.JsonMapper.jsonAsString;
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
 
 
 public class BaseTest extends Configuration{
@@ -36,7 +38,8 @@ public class BaseTest extends Configuration{
         PROPS = new PropsGenerator();
     }
 
-    public static Response postBasestate (int opNumber){
+    @Test (timeout = 200 * KIZ_COUNT)
+    public void postBasestate (int opNumber){
 
         System.out.println(RestAssured.baseURI  + "/kiz/basestate/" + opNumber);
         System.out.println(jsonAsString(createBody(opNumber)));
@@ -48,7 +51,7 @@ public class BaseTest extends Configuration{
                       when().
                       post("/kiz/basestate/" + opNumber).
                       then().
-                      //statusCode(200).
+                      statusCode(200).
                       extract().response();
           } else {
               response = given().
@@ -60,11 +63,12 @@ public class BaseTest extends Configuration{
                       statusCode(200).
                       extract().response();
           }
-            System.out.println(response.body().asString());
-           return response;
+            System.out.println(response.body().asString());;
     }
 
-    public static Response checkAccept(){
+
+    @Test (timeout = 200 * KIZ_COUNT)
+    public void checkAccept(){
         Response response = given().
                     contentType("application/json").
                 when().
@@ -76,10 +80,11 @@ public class BaseTest extends Configuration{
                     body("brokenKizCount", equalTo(0)).
                 extract().response();
         System.out.println(response.body().asString());
-        return response;
     }
 
-    public static Response checkReject(){
+
+    @Test (timeout = 200 * KIZ_COUNT)
+    public void checkReject(){
         Response response = given().
                 contentType("application/json").
                 when().
@@ -90,7 +95,6 @@ public class BaseTest extends Configuration{
                 body("brokenKizCount", equalTo(KIZ_COUNT)).
                 extract().response();
         System.out.println(response.body().asString());
-        return response;
     }
 
     private static Basestate createBody (int opNumber){
