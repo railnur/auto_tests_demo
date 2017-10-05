@@ -42,6 +42,11 @@ public class Kiz {
         this.sign = sign;
     }
 
+    public Kiz(String sign) {
+        super();
+        this.sign = sign;
+    }
+
     /**
      *
      * @param sign

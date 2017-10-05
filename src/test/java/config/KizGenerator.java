@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 public class KizGenerator {
 
@@ -87,6 +88,42 @@ public class KizGenerator {
 
         System.out.println(kiztext);
         return kiztext;
+    }
+
+
+    public List<Kiz> createRelabelingList (List<Kiz> kizList) {
+
+        List<Kiz> kizListRelebeling = new ArrayList<Kiz>();
+        kizListRelebeling.addAll(copyKiz(kizList));
+
+        for (Kiz kiz : kizListRelebeling){
+            Metadata metadata = new Metadata();
+            metadata.setSgtinNew(kiz.getSign().replaceAll("[A-Z]{8}", randomString("AUTOTEST")));
+            kiz.setMetadata(metadata);
+        }
+
+        return kizListRelebeling;
+    }
+
+    public List<Kiz> getNewKizList (List<Kiz> kizList){
+        List<Kiz> newKizList = new ArrayList<Kiz>();
+        for (Kiz kizs : kizList){
+            Kiz kiz = new Kiz();
+            kiz.setSign(kizs.getMetadata().getSgtinNew());
+            newKizList.add(kiz);
+        }
+
+        return newKizList;
+    }
+
+
+    private String randomString(String chars) {
+        Random rand = new Random();
+        StringBuilder buf = new StringBuilder();
+        for (int i = 0; i < chars.length(); i++) {
+            buf.append(chars.charAt(rand.nextInt(chars.length())));
+        }
+        return buf.toString().toUpperCase();
     }
 
 }
