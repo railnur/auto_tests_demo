@@ -12,7 +12,7 @@ public class Configuration {
     public static final String GTIN = "04606556002770";
     public static final String BATCH = "20170912-1410";
     public static final String EXP_DATE = "2020-02-02";
-    public static final int KIZ_COUNT = 2;
+    public static final int KIZ_COUNT = 10;
     public static final int DOC_TYPE = 1;
     public static final String DOC_NUM = "2017-09-12-14-01";
     public static final String DOC_DATE = "2017-08-09";
@@ -31,6 +31,6 @@ public class Configuration {
     public static int WITHDRAWAL_TYPE = 6;
     public static final int CONTROL_TYPE = 1;
     public static final int STORAGE_TYPE =1;
-    public static int[] SEQUENCE = {11, 12, 65, 65, 65};
+    public static int[] SEQUENCE = {11, 12, 51};
 
 }

@@ -15,10 +15,8 @@ import java.util.concurrent.Callable;
 
 import static config.JsonMapper.jsonAsString;
 import static io.restassured.RestAssured.given;
-import static java.lang.Thread.sleep;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
-import static org.hamcrest.Matchers.equalTo;
 
 public class BaseTest extends Configuration{
 
@@ -69,48 +67,49 @@ public class BaseTest extends Configuration{
           }
             System.out.println(response.body().asString());
 
-        try {
-            sleep(500 * KIZ_COUNT);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        if (checkType)  await().atMost(5, SECONDS).until(checkAccept(QUERY_ID));
-          else checkReject();
+        if (checkType)  await().atMost(5 * KIZ_COUNT, SECONDS).until(checkAccept(QUERY_ID));
+          else await().atMost(5 * KIZ_COUNT, SECONDS).until(checkAccept(QUERY_ID));
     }
 
 
     private Callable<Boolean> checkAccept(final String queryId) throws Exception {
         return new Callable<Boolean>() {
             public Boolean call() throws Exception {
-                int response = given().
-                            contentType("application/json").
+                Response response = given().
+                        contentType("application/json").
                         when().
-                            get("/kiz/result/" + QUERY_ID).
-                        thenReturn().
-                            statusCode();
-                return response == 200;
+                        get("/kiz/result/" + QUERY_ID);
+                return response.statusCode() == 200 &&
+                        response.body().jsonPath().getInt("kizCount") == KIZ_COUNT &&
+                        response.body().jsonPath().getInt("brokenKizCount") == 0 &&
+                        response.body().jsonPath().getInt("code") == 0;
             }
         };
     }
 
 
-    private void checkReject(){
-        Response response = given().
-                contentType("application/json").
-                when().
-                get("/kiz/result/" + QUERY_ID).
-                then().
-                statusCode(200).
-                body("kizCount", equalTo(KIZ_COUNT)).
-                body("brokenKizCount", equalTo(KIZ_COUNT)).
-                extract().response();
-        System.out.println(response.body().asString());
-    }
+    private Callable<Boolean> checkReject(final String queryId) throws Exception {
+            return new Callable<Boolean>() {
+                public Boolean call() throws Exception {
+                    Response response = given().
+                            contentType("application/json").
+                            when().
+                            get("/kiz/result/" + QUERY_ID);
+                    return response.statusCode() == 200 &&
+                            response.body().jsonPath().getInt("kizCount") == KIZ_COUNT &&
+                            response.body().jsonPath().getInt("brokenKizCount") ==KIZ_COUNT;
+                }
+            };
+        }
 
     private static Basestate createBody (int opNumber){
         Basestate bst;
         switch (opNumber){
             case 11:
+            case 23:
+                KIZ_LIST = kizGenerator.generate(KIZ_COUNT);
+                bst = new Basestate(QUERY_ID, KIZ_LIST, PROPS.getProps(opNumber));
+                break;
             case 12:
             case 17:
             case 18:
@@ -124,7 +123,6 @@ public class BaseTest extends Configuration{
             case 306:
                 bst = new Basestate(QUERY_ID, KIZ_LIST, PROPS.getProps(opNumber));
                 break;
-            case 23:
             case 24:
             case 31:
             case 32:
@@ -144,6 +142,9 @@ public class BaseTest extends Configuration{
         }
 
         return bst;
+    }
+
+    public void setMetadataCost(){
     }
 
 }

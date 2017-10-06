@@ -40,6 +40,8 @@ public class PropsGenerator extends Configuration{
                 break;
             case 22:
                 props.setHsCode(HS_CODE);
+                props.setControlId(SUBJECT_ID_FOREIGN);
+                props.setPackingId(SUBJECT_ID_FOREIGN);
                 props.setGtin(GTIN);
                 props.setBatch(BATCH);
                 props.setExpDate(EXP_DATE);
