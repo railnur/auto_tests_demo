@@ -12,6 +12,8 @@ public class EndPackingTest extends BaseTest {
 
     @Test
     public void createKizsTest() throws Exception {
-        for (int i = 0; i < SEQUENCE.length; i++) postBasestate(SEQUENCE[i], true);
+        postBasestate(11, true);
+        postBasestate(12, true);
+        postBasestate(31, true);
     }
 }
