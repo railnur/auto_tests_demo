@@ -9,13 +9,14 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 public class KizGenerator {
 
     private List<Doc> docs = new ArrayList<Doc>();
     private Doc doc = new Doc(1,"000000001","2017-08-09");
     private Metadata metadata_price;
-    private Metadata metadata_cost = new Metadata(1033, 100033);
+    private Metadata metadata_cost = new Metadata(100033, 100033);
     public KizGenerator(){
     }
 
@@ -49,7 +50,7 @@ public class KizGenerator {
         List<Kiz> kizListCost = new ArrayList<Kiz>();
         kizListCost.addAll(copyKiz(kizList));
         docs.add(doc);
-        metadata_price = new Metadata(1033, 100033, docs);
+        metadata_price = new Metadata(100033, 100033, docs);
         for (Kiz kiz : kizListCost){
             kiz.setMetadata(metadata_price);
         }
@@ -87,6 +88,42 @@ public class KizGenerator {
 
         System.out.println(kiztext);
         return kiztext;
+    }
+
+
+    public List<Kiz> createRelabelingList (List<Kiz> kizList) {
+
+        List<Kiz> kizListRelebeling = new ArrayList<Kiz>();
+        kizListRelebeling.addAll(copyKiz(kizList));
+
+        for (Kiz kiz : kizListRelebeling){
+            Metadata metadata = new Metadata();
+            metadata.setSgtinNew(kiz.getSign().replaceAll("[A-Z]{8}", randomString("AUTOTEST")));
+            kiz.setMetadata(metadata);
+        }
+
+        return kizListRelebeling;
+    }
+
+    public List<Kiz> getNewKizList (List<Kiz> kizList){
+        List<Kiz> newKizList = new ArrayList<Kiz>();
+        for (Kiz kizs : kizList){
+            Kiz kiz = new Kiz();
+            kiz.setSign(kizs.getMetadata().getSgtinNew());
+            newKizList.add(kiz);
+        }
+
+        return newKizList;
+    }
+
+
+    private String randomString(String chars) {
+        Random rand = new Random();
+        StringBuilder buf = new StringBuilder();
+        for (int i = 0; i < chars.length(); i++) {
+            buf.append(chars.charAt(rand.nextInt(chars.length())));
+        }
+        return buf.toString().toUpperCase();
     }
 
 }

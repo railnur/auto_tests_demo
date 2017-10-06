@@ -1,6 +1,6 @@
 package tests.basestatetests;
 
-import org.junit.Test;
+import org.junit.*;
 import tests.BaseTest;
 
 
@@ -11,12 +11,7 @@ public class EndPackingTest extends BaseTest {
 
 
     @Test
-    public void createKizsTest(){
-
-        postBasestate(11);
-        postBasestate(12);
-        postBasestate(31);
-        postBasestate(32);
-
+    public void createKizsTest() throws Exception {
+        for (int i = 0; i < SEQUENCE.length; i++) postBasestate(SEQUENCE[i], true);
     }
 }

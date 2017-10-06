@@ -77,6 +77,7 @@ public class Metadata {
     }
 
 
+
     @JsonProperty("vat_value")
     public int getVatValue() {
         return vatValue;

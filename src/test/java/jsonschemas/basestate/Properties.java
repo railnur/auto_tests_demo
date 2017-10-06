@@ -37,7 +37,11 @@ import java.util.Map;
     "withdrawal_type",
     "sscc",
     "prescription_num",
-    "prescription_date"
+    "prescription_date",
+    "use_doc_num",
+    "use_doc_date",
+    "packing_id",
+    "control_id"
 })
 public class Properties {
 
@@ -103,6 +107,14 @@ public class Properties {
     private String prescriptionNum;
     @JsonProperty("prescription_date")
     private String prescriptionDate;
+    @JsonProperty("use_doc_num")
+    private String useDocNum;
+    @JsonProperty("use_doc_date")
+    private String useDocDate;
+    @JsonProperty("packing_id")
+    private String packingId;
+    @JsonProperty("control_id")
+    private String controlId;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -112,72 +124,6 @@ public class Properties {
      */
     public Properties() {
     }
-
-    /**
-     * 
-     * @param invoiceDate
-     * @param systemSubjId
-     * @param docType
-     * @param shipmentType
-     * @param ownerId
-     * @param expDate
-     * @param customProcedureCode
-     * @param contractType
-     * @param acceptType
-     * @param docDate
-     * @param invoiceNum
-     * @param consigneeId
-     * @param sourceType
-     * @param opDate
-     * @param orderType
-     * @param gtdInfo
-     * @param gtin
-     * @param hsCode
-     * @param controlType
-     * @param consumerId
-     * @param docNum
-     * @param refuseReason
-     * @param storageType
-     * @param sellerId
-     * @param batch
-     * @param receivingType
-     * @param sscc
-     * @param withdrawalType
-     * @param refusedBy
-     */
-    public Properties(String systemSubjId, String opDate, int orderType, String ownerId, String hsCode, String gtin, String batch, String expDate, int docType, String docNum, String docDate, String sellerId, String consumerId, String invoiceNum, String invoiceDate, int controlType, int customProcedureCode, GtdInfo gtdInfo, String consigneeId, int shipmentType, int sourceType, int acceptType, int contractType, int receivingType, int storageType, String refuseReason, int refusedBy, int withdrawalType, String sscc) {
-        super();
-        this.systemSubjId = systemSubjId;
-        this.opDate = opDate;
-        this.orderType = orderType;
-        this.ownerId = ownerId;
-        this.hsCode = hsCode;
-        this.gtin = gtin;
-        this.batch = batch;
-        this.expDate = expDate;
-        this.docType = docType;
-        this.docNum = docNum;
-        this.docDate = docDate;
-        this.sellerId = sellerId;
-        this.consumerId = consumerId;
-        this.invoiceNum = invoiceNum;
-        this.invoiceDate = invoiceDate;
-        this.controlType = controlType;
-        this.customProcedureCode = customProcedureCode;
-        this.gtdInfo = gtdInfo;
-        this.consigneeId = consigneeId;
-        this.shipmentType = shipmentType;
-        this.sourceType = sourceType;
-        this.acceptType = acceptType;
-        this.contractType = contractType;
-        this.receivingType = receivingType;
-        this.storageType = storageType;
-        this.refuseReason = refuseReason;
-        this.refusedBy = refusedBy;
-        this.withdrawalType = withdrawalType;
-        this.sscc = sscc;
-    }
-
 
     public Properties(String systemSubjId, String opDate) {
         super();
@@ -245,6 +191,36 @@ public class Properties {
 
     public Properties withSystemSubjId(String systemSubjId) {
         this.systemSubjId = systemSubjId;
+        return this;
+    }
+
+    @JsonProperty("packing_id")
+    public String getPackingId() {
+        return packingId;
+    }
+
+    @JsonProperty("packing_id")
+    public void setPackingId(String packingId) {
+        this.packingId = packingId;
+    }
+
+    public Properties withPackingId(String packingId) {
+        this.packingId = packingId;
+        return this;
+    }
+
+    @JsonProperty("control_id")
+    public String getControlId() {
+        return controlId;
+    }
+
+    @JsonProperty("control_id")
+    public void setControlId(String controlId) {
+        this.controlId = controlId;
+    }
+
+    public Properties withControlId(String controlId) {
+        this.controlId = controlId;
         return this;
     }
 
@@ -695,6 +671,37 @@ public class Properties {
 
     public Properties withPrescriptionDate(String prescriptionDate) {
         this.prescriptionDate = prescriptionDate;
+        return this;
+    }
+
+
+    @JsonProperty("use_doc_num")
+    public String getUseDocNum() {
+        return useDocNum;
+    }
+
+    @JsonProperty("use_doc_num")
+    public void setUseDocNum(String useDocNum) {
+        this.useDocNum = useDocNum;
+    }
+
+    public Properties withUseDocNum(String useDocNum) {
+        this.useDocNum = useDocNum;
+        return this;
+    }
+
+    @JsonProperty("use_doc_date")
+    public String getUseDocDate() {
+        return useDocDate;
+    }
+
+    @JsonProperty("use_doc_date")
+    public void setUseDocDate(String useDocDate) {
+        this.useDocDate = useDocDate;
+    }
+
+    public Properties withUseDocDate(String useDocDate) {
+        this.useDocDate = useDocDate;
         return this;
     }
 

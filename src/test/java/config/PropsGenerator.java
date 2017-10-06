@@ -40,6 +40,8 @@ public class PropsGenerator extends Configuration{
                 break;
             case 22:
                 props.setHsCode(HS_CODE);
+                props.setControlId(SUBJECT_ID_FOREIGN);
+                props.setPackingId(SUBJECT_ID_FOREIGN);
                 props.setGtin(GTIN);
                 props.setBatch(BATCH);
                 props.setExpDate(EXP_DATE);
@@ -58,7 +60,7 @@ public class PropsGenerator extends Configuration{
                 props.setInvoiceDate(INVOICE_DATE);
                 break;
             case 25:
-                props.setContractType(CONTRACT_TYPE);
+                props.setControlType(CONTROL_TYPE);
                 props.setDocNum(DOC_NUM);
                 props.setDocDate(DOC_DATE);
                 props.setCustomProcedureCode(CUSTOM_PROCEDURE_CODE);
@@ -69,17 +71,27 @@ public class PropsGenerator extends Configuration{
                 props.setSourceType(SOURCE_TYPE);
                 props.setAcceptType(ACCEPT_TYPE);
                 props.setContractType(CONTRACT_TYPE);
-                props.setConsigneeId(CONSIGNEE_ID);
-                SUBJECT_ID_RF = CONSIGNEE_ID;
-                SELLER_ID = CONSIGNEE_ID;
+                props.setConsigneeId(new String(CONSIGNEE_ID));
                 props.setDocNum(DOC_NUM);
                 props.setDocDate(DOC_DATE);
+                props.setSystemSubjId(SUBJECT_ID_RF);
                 break;
             case 32:
+                SELLER_ID = new String(SUBJECT_ID_RF);
+                String temp = new String(CONSIGNEE_ID);
+                CONSIGNEE_ID = new String(SUBJECT_ID_RF);
+                SUBJECT_ID_RF = new String(temp);
                 props.setReceivingType(RECEIVING_TYPE);
                 props.setAcceptType(ACCEPT_TYPE);
                 props.setContractType(CONTRACT_TYPE);
                 props.setSellerId(SELLER_ID);
+                props.setDocNum(DOC_NUM);
+                props.setDocDate(DOC_DATE);
+                props.setSystemSubjId(SUBJECT_ID_RF);
+                break;
+            case 33:
+                props.setConsigneeId(CONSIGNEE_ID);
+                props.setStorageType(STORAGE_TYPE);
                 props.setDocNum(DOC_NUM);
                 props.setDocDate(DOC_DATE);
                 break;
@@ -90,11 +102,21 @@ public class PropsGenerator extends Configuration{
                 props.setDocDate(DOC_DATE);
                 props.setWithdrawalType(WITHDRAWAL_TYPE);
                 break;
+            case 65:
+                break;
             case 301:
                 props.setControlType(CONTROL_TYPE);
+                break;
             case 305:
                 props.setPrescriptionNum(DOC_NUM);
                 props.setPrescriptionDate(DOC_DATE);
+                break;
+            case 306:
+                props.setUseDocDate(DOC_DATE);
+                props.setUseDocNum(DOC_NUM);
+                break;
+            default:
+                break;
         }
 
         return props;
