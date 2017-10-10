@@ -12,7 +12,7 @@ public class PropsGenerator extends Configuration{
     public Properties getProps(int opNumber) {
 
         props = new Properties(SUBJECT_ID_RF, OP_DATE);
-
+        String temp;
         switch (opNumber){
             case 11:
                 props.setOrderType(ORDER_TYPE);
@@ -21,6 +21,7 @@ public class PropsGenerator extends Configuration{
                 props.setGtin(GTIN);
                 props.setBatch(BATCH);
                 props.setExpDate(EXP_DATE);
+                props.setOwnerId(OWNER_ID);
                 break;
             case 12:
                 props.setDocType(DOC_TYPE);
@@ -29,11 +30,17 @@ public class PropsGenerator extends Configuration{
                 break;
             case 17:
                 props.setOwnerId(OWNER_ID);
-                SUBJECT_ID_RF = OWNER_ID;
                 props.setDocNum(DOC_NUM);
                 props.setDocDate(DOC_DATE);
                 break;
             case 18:
+                temp = new String(SUBJECT_ID_RF);
+                SUBJECT_ID_RF = new String(OWNER_ID);
+                OWNER_ID = new String(temp);
+                props.setVendorId(OWNER_ID);
+                props.setDocNum(DOC_NUM);
+                props.setDocDate(DOC_DATE);
+                props.setSystemSubjId(SUBJECT_ID_RF);
             case 28:
                 props.setDocNum(DOC_NUM);
                 props.setDocDate(DOC_DATE);
@@ -78,7 +85,7 @@ public class PropsGenerator extends Configuration{
                 break;
             case 32:
                 SELLER_ID = new String(SUBJECT_ID_RF);
-                String temp = new String(CONSIGNEE_ID);
+                temp = new String(CONSIGNEE_ID);
                 CONSIGNEE_ID = new String(SUBJECT_ID_RF);
                 SUBJECT_ID_RF = new String(temp);
                 props.setReceivingType(RECEIVING_TYPE);
@@ -91,7 +98,6 @@ public class PropsGenerator extends Configuration{
                 break;
             case 33:
                 props.setConsigneeId(CONSIGNEE_ID);
-                props.setStorageType(STORAGE_TYPE);
                 props.setDocNum(DOC_NUM);
                 props.setDocDate(DOC_DATE);
                 break;

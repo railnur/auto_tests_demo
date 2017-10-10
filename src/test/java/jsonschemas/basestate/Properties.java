@@ -41,7 +41,8 @@ import java.util.Map;
     "use_doc_num",
     "use_doc_date",
     "packing_id",
-    "control_id"
+    "control_id",
+    "vendor_id"
 })
 public class Properties {
 
@@ -115,6 +116,9 @@ public class Properties {
     private String packingId;
     @JsonProperty("control_id")
     private String controlId;
+    @JsonProperty("vendor_id")
+    private String vendorId;
+
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -702,6 +706,21 @@ public class Properties {
 
     public Properties withUseDocDate(String useDocDate) {
         this.useDocDate = useDocDate;
+        return this;
+    }
+
+    @JsonProperty("vendor_id")
+    public String getVendorId() {
+        return vendorId;
+    }
+
+    @JsonProperty("vendor_id")
+    public void setVendorId(String vendorId) {
+        this.vendorId = vendorId;
+    }
+
+    public Properties withVendorId(String vendorId) {
+        this.vendorId = vendorId;
         return this;
     }
 

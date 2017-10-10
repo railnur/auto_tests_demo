@@ -69,6 +69,9 @@ public class BaseTest extends Configuration{
 
         if (checkType)  await().atMost(5 * KIZ_COUNT, SECONDS).until(checkAccept(QUERY_ID));
           else await().atMost(5 * KIZ_COUNT, SECONDS).until(checkAccept(QUERY_ID));
+
+          SECONDS.sleep(1);
+
     }
 
 
@@ -80,7 +83,6 @@ public class BaseTest extends Configuration{
                         when().
                         get("/kiz/result/" + QUERY_ID);
                 return response.statusCode() == 200 &&
-                        response.body().jsonPath().getInt("kizCount") == KIZ_COUNT &&
                         response.body().jsonPath().getInt("brokenKizCount") == 0 &&
                         response.body().jsonPath().getInt("code") == 0;
             }
@@ -104,16 +106,16 @@ public class BaseTest extends Configuration{
 
     private static Basestate createBody (int opNumber){
         Basestate bst;
+        QUERY_ID = UUID.randomUUID().toString();
         switch (opNumber){
             case 11:
-            case 23:
+            case 22:
                 KIZ_LIST = kizGenerator.generate(KIZ_COUNT);
                 bst = new Basestate(QUERY_ID, KIZ_LIST, PROPS.getProps(opNumber));
                 break;
             case 12:
             case 17:
             case 18:
-            case 22:
             case 25:
             case 28:
             case 33:
@@ -123,6 +125,7 @@ public class BaseTest extends Configuration{
             case 306:
                 bst = new Basestate(QUERY_ID, KIZ_LIST, PROPS.getProps(opNumber));
                 break;
+            case 23:
             case 24:
             case 31:
             case 32:
