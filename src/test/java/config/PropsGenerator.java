@@ -88,6 +88,7 @@ public class PropsGenerator extends Configuration{
                 temp = new String(CONSIGNEE_ID);
                 CONSIGNEE_ID = new String(SUBJECT_ID_RF);
                 SUBJECT_ID_RF = new String(temp);
+
                 props.setReceivingType(RECEIVING_TYPE);
                 props.setAcceptType(ACCEPT_TYPE);
                 props.setContractType(CONTRACT_TYPE);

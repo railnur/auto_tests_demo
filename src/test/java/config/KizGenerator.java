@@ -86,7 +86,6 @@ public class KizGenerator {
             kiztext = date + "AUTOTEST0" + i;
         }
 
-        System.out.println(kiztext);
         return kiztext;
     }
 

@@ -3,10 +3,14 @@ package tests;
 import config.Configuration;
 import config.KizGenerator;
 import config.PropsGenerator;
+import config.ToLoggerPrintStream;
 import io.restassured.RestAssured;
+import io.restassured.config.LogConfig;
 import io.restassured.response.Response;
 import jsonschemas.basestate.Basestate;
 import jsonschemas.basestate.Kiz;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,49 +32,52 @@ public class BaseTest extends Configuration{
     public static List<Kiz> KIZ_LIST_PRICE;
     public static PropsGenerator PROPS;
     public static List<Kiz> KIZ_RELABEL;
+    private Logger myLog;
+    private ToLoggerPrintStream loggerPrintStream;
+
 
 
     public BaseTest(){
+
+        myLog = LoggerFactory.getLogger(BaseTest.class);
+        loggerPrintStream = new ToLoggerPrintStream(myLog);
         RestAssured.baseURI = API_URI;
-        KIZ_LIST = kizGenerator.generate(KIZ_COUNT);
-        KIZ_LIST_COST = new ArrayList<Kiz>(kizGenerator.addMetadataCost(KIZ_LIST));
-        KIZ_LIST_PRICE = new ArrayList<Kiz>(kizGenerator.addMetadataPrice(KIZ_LIST));
+        RestAssured.config = RestAssured.config().logConfig(new LogConfig( loggerPrintStream.getPrintStream(), true ));
+        KIZ_LIST = new ArrayList<Kiz>();
+        KIZ_LIST_COST = new ArrayList<Kiz>();
+        KIZ_LIST_PRICE = new ArrayList<Kiz>();
         PROPS = new PropsGenerator();
 
     }
 
     public void postBasestate (int opNumber, boolean checkType) throws Exception{
 
-
-        System.out.println(jsonAsString(createBody(opNumber)));
           Response response;
           if (opNumber < 100) {
-              System.out.println(RestAssured.baseURI  + "/kiz/basestate/" + opNumber);
-              response = given().
+              given().
                       contentType("application/json").
                       body(jsonAsString(createBody(opNumber))).
+                      log().all(true ).
                       when().
                       post("/kiz/basestate/" + opNumber).
                       then().
                         statusCode(200).
                       extract().response();
           } else {
-              System.out.println(RestAssured.baseURI  + "/kiz/lp/" + opNumber);
-              response = given().
+              given().
                       contentType("application/json").
                       body(jsonAsString(createBody(opNumber))).
+                      log().all().
                       when().
                       post("/kiz/lp/" + opNumber).
                       then().
                         statusCode(200).
                       extract().response();
           }
-            System.out.println(response.body().asString());
 
-        if (checkType)  await().atMost(5 * KIZ_COUNT, SECONDS).until(checkAccept(QUERY_ID));
-          else await().atMost(5 * KIZ_COUNT, SECONDS).until(checkAccept(QUERY_ID));
 
-          SECONDS.sleep(1);
+        if (checkType) await().atMost(5 * KIZ_COUNT, SECONDS).until(checkAccept(QUERY_ID)); //await().with().pollDelay(100, SECONDS).and().pollInterval(5 * KIZ_COUNT, SECONDS).await().until(checkAccept(QUERY_ID))
+        else await().atMost(5 * KIZ_COUNT, SECONDS).until(checkAccept(QUERY_ID));
 
     }
 
@@ -80,8 +87,10 @@ public class BaseTest extends Configuration{
             public Boolean call() throws Exception {
                 Response response = given().
                         contentType("application/json").
+                        log().uri().log().method().
                         when().
                         get("/kiz/result/" + QUERY_ID);
+                myLog.debug(response.body().asString());
                 return response.statusCode() == 200 &&
                         response.body().jsonPath().getInt("brokenKizCount") == 0 &&
                         response.body().jsonPath().getInt("code") == 0;
@@ -95,14 +104,17 @@ public class BaseTest extends Configuration{
                 public Boolean call() throws Exception {
                     Response response = given().
                             contentType("application/json").
+                            log().all().
                             when().
                             get("/kiz/result/" + QUERY_ID);
+                    myLog.debug(response.body().asString());
                     return response.statusCode() == 200 &&
                             response.body().jsonPath().getInt("kizCount") == KIZ_COUNT &&
                             response.body().jsonPath().getInt("brokenKizCount") ==KIZ_COUNT;
                 }
             };
         }
+
 
     private static Basestate createBody (int opNumber){
         Basestate bst;
@@ -129,6 +141,7 @@ public class BaseTest extends Configuration{
             case 24:
             case 31:
             case 32:
+                KIZ_LIST_COST = new ArrayList<Kiz>(kizGenerator.addMetadataCost(KIZ_LIST));
                 bst = new Basestate(QUERY_ID, KIZ_LIST_COST, PROPS.getProps(opNumber));
                 break;
             case 65:
@@ -137,6 +150,7 @@ public class BaseTest extends Configuration{
                 KIZ_LIST = new ArrayList<Kiz>(kizGenerator.getNewKizList(KIZ_RELABEL));
                 break;
             case 51:
+                KIZ_LIST_PRICE = new ArrayList<Kiz>(kizGenerator.addMetadataPrice(KIZ_LIST));
                 bst = new Basestate(QUERY_ID, KIZ_LIST_PRICE, PROPS.getProps(opNumber));
                 break;
             default:
@@ -147,7 +161,5 @@ public class BaseTest extends Configuration{
         return bst;
     }
 
-    public void setMetadataCost(){
-    }
 
 }

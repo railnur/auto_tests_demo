@@ -5,8 +5,8 @@ public class Configuration {
     public static  String SUBJECT_ID_RF = "00000000000456";
     public static final String SUBJECT_ID_FOREIGN = "e579d5cb-47c9-431a-953b-74077f9f9ba9";
     public static String OWNER_ID = "00000000000467";
-    public static String CONSIGNEE_ID = "00000000000697";
-    public static String SELLER_ID = "00000000000464";
+    public static String CONSIGNEE_ID = "00000000000467";
+    public static String SELLER_ID = "00000000000467";
     public static final String OP_DATE = "2017-08-12T14:00:00+03:00";
     public static final String HS_CODE = "3004";
     public static final String GTIN = "04606556002770";
@@ -27,10 +27,10 @@ public class Configuration {
     public static final int SOURCE_TYPE = 1;
     public static final int SHIPMENT_TYPE = 1;
     public static final int RECEIVING_TYPE = 1;
-    public static final int ORDER_TYPE = 2;
+    public static final int ORDER_TYPE = 1;
     public static int WITHDRAWAL_TYPE = 6;
     public static final int CONTROL_TYPE = 2;
     public static final int STORAGE_TYPE =1;
-    public static int[] SEQUENCE = {11, 12, 17};
+    public static int[] SEQUENCE = {11, 12};
 
 }
