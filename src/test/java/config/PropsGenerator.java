@@ -3,124 +3,129 @@ package config;
 import jsonschemas.basestate.GtdInfo;
 import jsonschemas.basestate.Properties;
 
-public class PropsGenerator extends Configuration{
+public class PropsGenerator{
 
     private Properties props;
+    private Configuration configurationProps = new Configuration();
     public PropsGenerator(){
     }
 
     public Properties getProps(int opNumber) {
 
-        props = new Properties(SUBJECT_ID_RF, OP_DATE);
+        props = new Properties(configurationProps.getSubjectIdRf(), configurationProps.getOpDate());
         String temp;
         switch (opNumber){
             case 11:
-                props.setOrderType(ORDER_TYPE);
-                props.setOwnerId(SUBJECT_ID_RF);
-                props.setHsCode(HS_CODE);
-                props.setGtin(GTIN);
-                props.setBatch(BATCH);
-                props.setExpDate(EXP_DATE);
-                props.setOwnerId(OWNER_ID);
+                props.setOrderType(configurationProps.getOrderType());
+                props.setOwnerId(configurationProps.getOwnerId());
+                props.setHsCode(configurationProps.getHsCode());
+                props.setGtin(configurationProps.getGTIN());
+                props.setBatch(configurationProps.getBATCH());
+                props.setExpDate(configurationProps.getExpDate());
                 break;
             case 12:
-                props.setDocType(DOC_TYPE);
-                props.setDocNum(DOC_NUM);
-                props.setDocDate(DOC_DATE);
+                props.setDocType(configurationProps.getDocType());
+                props.setDocNum(configurationProps.getDocNum());
+                props.setDocDate(configurationProps.getDocDate());
                 break;
             case 17:
-                props.setOwnerId(OWNER_ID);
-                props.setDocNum(DOC_NUM);
-                props.setDocDate(DOC_DATE);
+                props.setOwnerId(configurationProps.getOwnerId());
+                props.setDocNum(configurationProps.getDocNum());
+                props.setDocDate(configurationProps.getDocDate());
                 break;
             case 18:
-                temp = new String(SUBJECT_ID_RF);
-                SUBJECT_ID_RF = new String(OWNER_ID);
-                OWNER_ID = new String(temp);
-                props.setVendorId(OWNER_ID);
-                props.setDocNum(DOC_NUM);
-                props.setDocDate(DOC_DATE);
-                props.setSystemSubjId(SUBJECT_ID_RF);
+                temp = configurationProps.getSubjectIdRf();
+                configurationProps.setSubjectIdRf(configurationProps.getOwnerId());
+                configurationProps.setOwnerId(temp);
+                props.setVendorId(configurationProps.getOwnerId());
+                props.setDocNum(configurationProps.getDocNum());
+                props.setDocDate(configurationProps.getDocDate());
+                props.setSystemSubjId(configurationProps.getSubjectIdRf());
             case 28:
-                props.setDocNum(DOC_NUM);
-                props.setDocDate(DOC_DATE);
+                props.setDocNum(configurationProps.getDocNum());
+                props.setDocDate(configurationProps.getDocDate());
                 break;
             case 22:
-                props.setHsCode(HS_CODE);
-                props.setControlId(SUBJECT_ID_FOREIGN);
-                props.setPackingId(SUBJECT_ID_FOREIGN);
-                props.setGtin(GTIN);
-                props.setBatch(BATCH);
-                props.setExpDate(EXP_DATE);
-                props.setSystemSubjId(SUBJECT_ID_FOREIGN);
+                props.setHsCode(configurationProps.getHsCode());
+                props.setControlId(configurationProps.getControlId());
+                props.setPackingId(configurationProps.getPackingId());
+                props.setGtin(configurationProps.getGTIN());
+                props.setBatch(configurationProps.getBATCH());
+                props.setExpDate(configurationProps.getExpDate());
+                props.setSystemSubjId(configurationProps.getSubjectIdForeign());
                 break;
             case 23:
-                props.setSystemSubjId(SUBJECT_ID_FOREIGN);
-                props.setSellerId(SUBJECT_ID_FOREIGN);
-                props.setConsumerId(SUBJECT_ID_RF);
-                props.setInvoiceNum(INVOICE_NUM);
-                props.setInvoiceDate(INVOICE_DATE);
+                props.setSystemSubjId(configurationProps.getSubjectIdForeign());
+                props.setSellerId(configurationProps.getSubjectIdForeign());
+                props.setConsumerId(configurationProps.getSubjectIdRf());
+                props.setInvoiceNum(configurationProps.getInvoiceNum());
+                props.setInvoiceDate(configurationProps.getInvoiceDate());
                 break;
             case 24:
-                props.setSellerId(SUBJECT_ID_FOREIGN);
-                props.setInvoiceNum(INVOICE_NUM);
-                props.setInvoiceDate(INVOICE_DATE);
+                props.setSellerId(configurationProps.getSubjectIdForeign());
+                props.setInvoiceNum(configurationProps.getInvoiceNum());
+                props.setInvoiceDate(configurationProps.getInvoiceDate());
                 break;
             case 25:
-                props.setControlType(CONTROL_TYPE);
-                props.setDocNum(DOC_NUM);
-                props.setDocDate(DOC_DATE);
-                props.setCustomProcedureCode(CUSTOM_PROCEDURE_CODE);
-                props.setGtdInfo(new GtdInfo(GTD_CUSTOMS_CODE, GTD_REG_DATE, GTD_REG_NUMBER));
+                props.setControlType(configurationProps.getControlType());
+                props.setDocNum(configurationProps.getDocNum());
+                props.setDocDate(configurationProps.getDocDate());
+                props.setCustomProcedureCode(configurationProps.getCustomProcedureCode());
+                props.setGtdInfo(new GtdInfo(configurationProps.getGtdCustomsCode(), configurationProps.getGtdRegDate(), configurationProps.getGtdRegNumber()));
                 break;
             case 31:
-                props.setShipmentType(SHIPMENT_TYPE);
-                props.setSourceType(SOURCE_TYPE);
-                props.setAcceptType(ACCEPT_TYPE);
-                props.setContractType(CONTRACT_TYPE);
-                props.setConsigneeId(new String(CONSIGNEE_ID));
-                props.setDocNum(DOC_NUM);
-                props.setDocDate(DOC_DATE);
-                props.setSystemSubjId(SUBJECT_ID_RF);
+                props.setShipmentType(configurationProps.getShipmentType());
+                props.setSourceType(configurationProps.getSourceType());
+                props.setAcceptType(configurationProps.getAcceptType());
+                props.setContractType(configurationProps.getContractType());
+                props.setConsigneeId(configurationProps.getConsigneeId());
+                props.setDocNum(configurationProps.getDocNum());
+                props.setDocDate(configurationProps.getDocDate());
                 break;
             case 32:
-                SELLER_ID = new String(SUBJECT_ID_RF);
-                temp = new String(CONSIGNEE_ID);
-                CONSIGNEE_ID = new String(SUBJECT_ID_RF);
-                SUBJECT_ID_RF = new String(temp);
-
-                props.setReceivingType(RECEIVING_TYPE);
-                props.setAcceptType(ACCEPT_TYPE);
-                props.setContractType(CONTRACT_TYPE);
-                props.setSellerId(SELLER_ID);
-                props.setDocNum(DOC_NUM);
-                props.setDocDate(DOC_DATE);
-                props.setSystemSubjId(SUBJECT_ID_RF);
+                configurationProps.setSellerId(configurationProps.getSubjectIdRf());
+                temp = configurationProps.getConsigneeId();
+                configurationProps.setConsigneeId(configurationProps.getSubjectIdRf());
+                configurationProps.setSubjectIdRf(temp);
+                props.setReceivingType(configurationProps.getReceivingType());
+                props.setAcceptType(configurationProps.getAcceptType());
+                props.setContractType(configurationProps.getContractType());
+                props.setSellerId(configurationProps.getSellerId());
+                props.setDocNum(configurationProps.getDocNum());
+                props.setDocDate(configurationProps.getDocDate());
+                props.setSystemSubjId(configurationProps.getSubjectIdRf());
                 break;
             case 33:
-                props.setConsigneeId(CONSIGNEE_ID);
-                props.setDocNum(DOC_NUM);
-                props.setDocDate(DOC_DATE);
+                props.setConsigneeId(configurationProps.getConsigneeId());
+                props.setDocNum(configurationProps.getDocNum());
+                props.setDocDate(configurationProps.getDocDate());
+                break;
+            case 34:
+                props.setRefuseReason("reason");
+                props.setRefusedBy(configurationProps.getRefusedBy());
+                if (configurationProps.getRefusedBy() == 0) configurationProps.setRefusedByEntityId(configurationProps.getSubjectIdRf());
+                else configurationProps.setRefusedByEntityId(configurationProps.getOwnerId());
+                props.setRefusedByEntityId(configurationProps.getRefusedByEntityId());
                 break;
             case 51:
                 break;
             case 52:
-                props.setDocNum(DOC_NUM);
-                props.setDocDate(DOC_DATE);
-                props.setWithdrawalType(WITHDRAWAL_TYPE);
+                props.setDocNum(configurationProps.getDocNum());
+                props.setDocDate(configurationProps.getDocDate());
+                props.setWithdrawalType(configurationProps.getWithdrawalType());
                 break;
             case 65:
                 break;
             case 301:
-                props.setControlType(CONTROL_TYPE);
+                props.setControlType(configurationProps.getControlType());
                 break;
             case 305:
-                props.setPrescriptionNum(DOC_NUM);
-                props.setPrescriptionDate(DOC_DATE);
+                props.setPrescriptionNum(configurationProps.getDocNum());
+                props.setPrescriptionDate(configurationProps.getDocDate());
                 break;
             case 306:
-                props.setUseDocDate(DOC_DATE);
-                props.setUseDocNum(DOC_NUM);
+                props.setUseDocDate(configurationProps.getDocDate());
+                props.setUseDocNum(configurationProps.getDocNum());
                 break;
             default:
                 break;

@@ -100,6 +100,8 @@ public class Properties {
     private String refuseReason;
     @JsonProperty("refused_by")
     private int refusedBy;
+    @JsonProperty("refused_by_entity_id")
+    private String refusedByEntityId;
     @JsonProperty("withdrawal_type")
     private int withdrawalType;
     @JsonProperty("sscc")
@@ -736,6 +738,21 @@ public class Properties {
 
     public Properties withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
+        return this;
+    }
+
+    @JsonProperty("refused_by_entity_id")
+    public String getRefusedByEntityId() {
+        return refusedByEntityId;
+    }
+
+    @JsonProperty("refused_by_entity_id")
+    public void setRefusedByEntityId(String refusedByEntityId) {
+        this.refusedByEntityId = refusedByEntityId;
+    }
+
+    public Properties withRefusedByEntityId(String refusedByEntityId) {
+        this.refusedByEntityId = refusedByEntityId;
         return this;
     }
 

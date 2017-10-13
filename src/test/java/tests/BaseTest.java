@@ -5,7 +5,6 @@ import config.KizGenerator;
 import config.PropsGenerator;
 import config.ToLoggerPrintStream;
 import io.restassured.RestAssured;
-import io.restassured.config.LogConfig;
 import io.restassured.response.Response;
 import jsonschemas.basestate.Basestate;
 import jsonschemas.basestate.Kiz;
@@ -22,27 +21,26 @@ import static io.restassured.RestAssured.given;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 
-public class BaseTest extends Configuration{
+
+public class BaseTest {
 
     private static KizGenerator kizGenerator = new KizGenerator();
     public static Response RESPONSE;
-    public static String QUERY_ID = UUID.randomUUID().toString();
-    public static List<Kiz> KIZ_LIST;
-    public static List<Kiz> KIZ_LIST_COST;
-    public static List<Kiz> KIZ_LIST_PRICE;
-    public static PropsGenerator PROPS;
-    public static List<Kiz> KIZ_RELABEL;
+    private static String QUERY_ID = UUID.randomUUID().toString();
+    private static List<Kiz> KIZ_LIST;
+    private static List<Kiz> KIZ_LIST_COST;
+    private static List<Kiz> KIZ_LIST_PRICE;
+    private static PropsGenerator PROPS;
+    private static List<Kiz> KIZ_RELABEL;
     private Logger myLog;
-    private ToLoggerPrintStream loggerPrintStream;
-
+    private Configuration configProps = new Configuration();
 
 
     public BaseTest(){
-
         myLog = LoggerFactory.getLogger(BaseTest.class);
-        loggerPrintStream = new ToLoggerPrintStream(myLog);
-        RestAssured.baseURI = API_URI;
-        RestAssured.config = RestAssured.config().logConfig(new LogConfig( loggerPrintStream.getPrintStream(), true ));
+        ToLoggerPrintStream loggerPrintStream = new ToLoggerPrintStream(myLog);
+        RestAssured.baseURI = configProps.getApiUri();
+       // RestAssured.config = RestAssured.config().logConfig(new LogConfig( loggerPrintStream.getPrintStream(), true ));
         KIZ_LIST = new ArrayList<Kiz>();
         KIZ_LIST_COST = new ArrayList<Kiz>();
         KIZ_LIST_PRICE = new ArrayList<Kiz>();
@@ -52,12 +50,13 @@ public class BaseTest extends Configuration{
 
     public void postBasestate (int opNumber, boolean checkType) throws Exception{
 
-          Response response;
+
+         myLog.debug("\n-------------------------------------------\n");
           if (opNumber < 100) {
               given().
                       contentType("application/json").
                       body(jsonAsString(createBody(opNumber))).
-                      log().all(true ).
+                      log().uri().log().body().
                       when().
                       post("/kiz/basestate/" + opNumber).
                       then().
@@ -75,9 +74,9 @@ public class BaseTest extends Configuration{
                       extract().response();
           }
 
-
-        if (checkType) await().atMost(5 * KIZ_COUNT, SECONDS).until(checkAccept(QUERY_ID)); //await().with().pollDelay(100, SECONDS).and().pollInterval(5 * KIZ_COUNT, SECONDS).await().until(checkAccept(QUERY_ID))
-        else await().atMost(5 * KIZ_COUNT, SECONDS).until(checkAccept(QUERY_ID));
+        myLog.debug("\n-------------------------------------------\n");
+        if (checkType) await().atMost(5 * configProps.getKizCount(), SECONDS).until(checkAccept(QUERY_ID)); //await().with().pollDelay(100, SECONDS).and().pollInterval(5 * KIZ_COUNT, SECONDS).await().until(checkAccept(QUERY_ID))
+        else await().atMost(5 * configProps.getKizCount(), SECONDS).until(checkAccept(QUERY_ID));
 
     }
 
@@ -85,12 +84,14 @@ public class BaseTest extends Configuration{
     private Callable<Boolean> checkAccept(final String queryId) throws Exception {
         return new Callable<Boolean>() {
             public Boolean call() throws Exception {
+                myLog.debug("\n-------------------------------------------\n");
                 Response response = given().
                         contentType("application/json").
                         log().uri().log().method().
                         when().
                         get("/kiz/result/" + QUERY_ID);
-                myLog.debug(response.body().asString());
+                System.out.println(response.body().asString());
+                myLog.debug("\n-------------------------------------------\n");
                 return response.statusCode() == 200 &&
                         response.body().jsonPath().getInt("brokenKizCount") == 0 &&
                         response.body().jsonPath().getInt("code") == 0;
@@ -109,20 +110,20 @@ public class BaseTest extends Configuration{
                             get("/kiz/result/" + QUERY_ID);
                     myLog.debug(response.body().asString());
                     return response.statusCode() == 200 &&
-                            response.body().jsonPath().getInt("kizCount") == KIZ_COUNT &&
-                            response.body().jsonPath().getInt("brokenKizCount") ==KIZ_COUNT;
+                            response.body().jsonPath().getInt("kizCount") == configProps.getKizCount() &&
+                            response.body().jsonPath().getInt("brokenKizCount") == configProps.getKizCount();
                 }
             };
         }
 
 
-    private static Basestate createBody (int opNumber){
+    private Basestate createBody (int opNumber){
         Basestate bst;
         QUERY_ID = UUID.randomUUID().toString();
         switch (opNumber){
             case 11:
             case 22:
-                KIZ_LIST = kizGenerator.generate(KIZ_COUNT);
+                KIZ_LIST = kizGenerator.generate(configProps.getKizCount());
                 bst = new Basestate(QUERY_ID, KIZ_LIST, PROPS.getProps(opNumber));
                 break;
             case 12:

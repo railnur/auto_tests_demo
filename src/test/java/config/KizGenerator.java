@@ -16,7 +16,7 @@ public class KizGenerator {
     private List<Doc> docs = new ArrayList<Doc>();
     private Doc doc = new Doc(1,"000000001","2017-08-09");
     private Metadata metadata_price;
-    private Metadata metadata_cost = new Metadata(100033, 100033);
+    private Metadata metadata_cost = new Metadata(0, 100033);
     public KizGenerator(){
     }
 
@@ -50,7 +50,7 @@ public class KizGenerator {
         List<Kiz> kizListCost = new ArrayList<Kiz>();
         kizListCost.addAll(copyKiz(kizList));
         docs.add(doc);
-        metadata_price = new Metadata(100033, 100033, docs);
+        metadata_price = new Metadata(0, 100033, docs);
         for (Kiz kiz : kizListCost){
             kiz.setMetadata(metadata_price);
         }
