@@ -8,6 +8,8 @@ import io.restassured.response.Response;
 import jsonschemas.basestate.Basestate;
 import jsonschemas.basestate.Kiz;
 import org.junit.Before;
+import org.junit.Rule;
+import org.junit.rules.TestName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,8 +38,12 @@ public class BaseTest {
     private static List<Kiz> KIZ_LIST_COST;
     private static List<Kiz> KIZ_LIST_PRICE;
     private static PropsGenerator PROPS;
-    private final Logger myLog = LoggerFactory.getLogger(this.getClass());
-    private Configuration configProps = new Configuration();
+    protected final Logger myLog = LoggerFactory.getLogger(getCurrentClassName());
+    protected Configuration configProps = new Configuration();
+
+
+    @Rule
+    public TestName name = new TestName();
 
 
     @Before
@@ -46,7 +52,7 @@ public class BaseTest {
         KIZ_LIST = new ArrayList<Kiz>();
         KIZ_LIST_COST = new ArrayList<Kiz>();
         KIZ_LIST_PRICE = new ArrayList<Kiz>();
-        PROPS = new PropsGenerator();
+        PROPS = new PropsGenerator(configProps);
     }
 
 
@@ -107,7 +113,7 @@ public class BaseTest {
     private Callable<Boolean> checkAccept(final String queryId) throws Exception {
         return new Callable<Boolean>() {
             public Boolean call() throws Exception {
-                myLog.info("REQUEST: \n" + RestAssured.baseURI + "/kiz/result/" + QUERY_ID);
+                myLog.info("REQUEST: \nURI: " + RestAssured.baseURI + "/kiz/result/" + QUERY_ID);
                 Response response = given().
                         contentType("application/json").
                         when().
@@ -200,4 +206,16 @@ public class BaseTest {
     }
 
 
+    /**
+     * Получить имя класса<br/>
+     * Вспомогательный метод, необходим для того чтобы в каждом новом тестовом классе не объявлять логгер
+     * @return String, имя класса
+     */
+    private static String getCurrentClassName(){
+        try {
+            throw new RuntimeException();
+        } catch (RuntimeException e){
+            return e.getStackTrace()[1].getClassName();
+        }
+    }
 }
