@@ -9,6 +9,13 @@ import java.util.Date;
 import java.util.Properties;
 import java.util.TimeZone;
 
+
+/**
+ * Класс служит для чтения и хранения свойств из файла конфигурации
+ *
+ * @author RNurullaev
+ * @version 1.0
+ */
 public class Configuration {
 
     //branches
@@ -47,7 +54,7 @@ public class Configuration {
     private int WITHDRAWAL_TYPE = 6;
     private int CONTROL_TYPE = 2;
     private int STORAGE_TYPE =1;
-    private int[] SEQUENCE = {11, 12, 17, 18};
+    private int[] SEQUENCE = {11, 12, 17};
     private int REFUSED_BY = 1;
     private Properties prop = new Properties();
     private InputStream input = null;
@@ -57,6 +64,9 @@ public class Configuration {
     }
 
 
+    /**
+     * Попытка чтения файла конфигурации и запись свойст в переменные
+     */
     private void readConfig(){
 
         try {
@@ -122,7 +132,7 @@ public class Configuration {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         Date date = new Date();
         dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-        return dateFormat.format(date).toString();
+        return dateFormat.format(date);
     }
 
     public  String getApiUri() {

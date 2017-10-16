@@ -3,12 +3,11 @@ package config;
 import jsonschemas.basestate.GtdInfo;
 import jsonschemas.basestate.Properties;
 
+
 public class PropsGenerator{
 
     private Properties props;
     private Configuration configurationProps = new Configuration();
-    public PropsGenerator(){
-    }
 
     public Properties getProps(int opNumber) {
 
