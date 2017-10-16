@@ -7,6 +7,9 @@ import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import jsonschemas.basestate.Basestate;
 import jsonschemas.basestate.Kiz;
+import org.junit.Before;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,102 +21,151 @@ import static io.restassured.RestAssured.given;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 
-public class BaseTest extends Configuration{
+
+/**
+ * Класс содержащий базовые настройки и методы для написания автотестов.
+ * Рекомендуется наследовать данный класс тестовым классом.
+ *
+ * @version 1.0
+ */
+public class BaseTest {
 
     private static KizGenerator kizGenerator = new KizGenerator();
-    public static Response RESPONSE;
-    public static String QUERY_ID = UUID.randomUUID().toString();
-    public static List<Kiz> KIZ_LIST;
-    public static List<Kiz> KIZ_LIST_COST;
-    public static List<Kiz> KIZ_LIST_PRICE;
-    public static PropsGenerator PROPS;
-    public static List<Kiz> KIZ_RELABEL;
+    private static String QUERY_ID = UUID.randomUUID().toString();
+    private static List<Kiz> KIZ_LIST;
+    private static List<Kiz> KIZ_LIST_COST;
+    private static List<Kiz> KIZ_LIST_PRICE;
+    private static PropsGenerator PROPS;
+    private final Logger myLog = LoggerFactory.getLogger(this.getClass());
+    private Configuration configProps = new Configuration();
 
 
-    public BaseTest(){
-        RestAssured.baseURI = API_URI;
-        KIZ_LIST = kizGenerator.generate(KIZ_COUNT);
-        KIZ_LIST_COST = new ArrayList<Kiz>(kizGenerator.addMetadataCost(KIZ_LIST));
-        KIZ_LIST_PRICE = new ArrayList<Kiz>(kizGenerator.addMetadataPrice(KIZ_LIST));
+    @Before
+    public void setUp() throws Exception {
+        RestAssured.baseURI = configProps.getApiUri();
+        KIZ_LIST = new ArrayList<Kiz>();
+        KIZ_LIST_COST = new ArrayList<Kiz>();
+        KIZ_LIST_PRICE = new ArrayList<Kiz>();
         PROPS = new PropsGenerator();
-
     }
 
-    public void postBasestate (int opNumber, boolean checkType) throws Exception{
 
+    /**
+     * Метод, который формирует и отправляет запрос методов трассировки на строну ядра
+     * и после этого проверяет статус прохождения операции.
+     *
+     * @param opNumber Номер операции на стороне ядра
+     * @param checkType Ожидаемый результат, true если ожидается успешное прохождение, false если ожидается отказ
+     */
+    protected void postBasestate(int opNumber, boolean checkType) throws Exception{
 
-        System.out.println(jsonAsString(createBody(opNumber)));
-          Response response;
-          if (opNumber < 100) {
-              System.out.println(RestAssured.baseURI  + "/kiz/basestate/" + opNumber);
+        String requestBody = createBody(opNumber); // Создаем тело запроса
+
+        Response response;
+        if (opNumber < 100) {
+              myLog.info("REQUEST: \nURI: " + RestAssured.baseURI + "/kiz/basestate/" + opNumber + "\nBody: " + requestBody);
               response = given().
                       contentType("application/json").
-                      body(jsonAsString(createBody(opNumber))).
+                      body(requestBody).
                       when().
                       post("/kiz/basestate/" + opNumber).
                       then().
                         statusCode(200).
                       extract().response();
+              myLog.info("RESPONSE: " + response.body().asString());
           } else {
-              System.out.println(RestAssured.baseURI  + "/kiz/lp/" + opNumber);
+              myLog.info("REQUEST: \n" + "Method: POST + \n" + "URI: " + RestAssured.baseURI + "/lp/basestate/" + opNumber + "\n Body: " + requestBody);
               response = given().
                       contentType("application/json").
-                      body(jsonAsString(createBody(opNumber))).
+                      body(requestBody).
                       when().
                       post("/kiz/lp/" + opNumber).
                       then().
                         statusCode(200).
                       extract().response();
+              myLog.info("RESPONSE: " + response.body().asString());
           }
-            System.out.println(response.body().asString());
 
-        if (checkType)  await().atMost(5 * KIZ_COUNT, SECONDS).until(checkAccept(QUERY_ID));
-          else await().atMost(5 * KIZ_COUNT, SECONDS).until(checkAccept(QUERY_ID));
+        if (checkType) await().with().pollDelay(configProps.getKizCount(), SECONDS).and().pollInterval(5, SECONDS).await().until(checkAccept(QUERY_ID));
+        else await().with().pollDelay(configProps.getKizCount(), SECONDS).and().pollInterval(5, SECONDS).await().until(checkAccept(QUERY_ID));
+
+
     }
 
-
+    /**
+     * Метод, который с определенным промежутком опрашивает ядро
+     * с целью узнать результат прохождения операции.
+     * Принимается на вход метод await() из библиотеки Awaitility
+     * Пример использование:<br>
+     *<pre>
+     *          await().with().pollDelay(configProps.getKizCount(), SECONDS).and().pollInterval(5, SECONDS).await().until(checkAccept(QUERY_ID))
+     *</pre>
+     *
+     * @param queryId Query_id операции
+     * @return true, если операция обработна успешно, false если ответ отрицательный
+     */
     private Callable<Boolean> checkAccept(final String queryId) throws Exception {
         return new Callable<Boolean>() {
             public Boolean call() throws Exception {
+                myLog.info("REQUEST: \n" + RestAssured.baseURI + "/kiz/result/" + QUERY_ID);
                 Response response = given().
                         contentType("application/json").
                         when().
                         get("/kiz/result/" + QUERY_ID);
+                myLog.info("RESPONSE: " + response.body().asString());
                 return response.statusCode() == 200 &&
-                        response.body().jsonPath().getInt("kizCount") == KIZ_COUNT &&
                         response.body().jsonPath().getInt("brokenKizCount") == 0 &&
                         response.body().jsonPath().getInt("code") == 0;
             }
         };
     }
 
-
+    /**
+     * Метод, который с определенным промежутком опрашивает ядро
+     * с целью узнать результат прохождения операции.
+     * Принимается на вход метод await() из библиотеки Awaitility
+     * Пример использование:<br>
+     *<pre>
+     *          await().with().pollDelay(configProps.getKizCount(), SECONDS).and().pollInterval(5, SECONDS).await().until(checkAccept(QUERY_ID))
+     *</pre>
+     *
+     * @param queryId Query_id операции
+     * @return true, если операция обработна отрицательно, false если операция прошла успешно
+     */
     private Callable<Boolean> checkReject(final String queryId) throws Exception {
             return new Callable<Boolean>() {
                 public Boolean call() throws Exception {
+                    myLog.info("REQUEST: \n" + RestAssured.baseURI + "/kiz/result/" + QUERY_ID);
                     Response response = given().
                             contentType("application/json").
                             when().
                             get("/kiz/result/" + QUERY_ID);
+                    myLog.info("RESPONSE: " + response.body().asString());
                     return response.statusCode() == 200 &&
-                            response.body().jsonPath().getInt("kizCount") == KIZ_COUNT &&
-                            response.body().jsonPath().getInt("brokenKizCount") ==KIZ_COUNT;
+                            response.body().jsonPath().getInt("kizCount") == configProps.getKizCount() &&
+                            response.body().jsonPath().getInt("brokenKizCount") == configProps.getKizCount();
                 }
             };
         }
 
-    private static Basestate createBody (int opNumber){
+    /**
+     * Генерирует тело для методов трассировки на стороне ядра по номеру операции.
+     *
+     * @param opNumber Номер операции
+     * @return String, тело запроса
+     */
+    private String createBody (int opNumber){
         Basestate bst;
+        QUERY_ID = UUID.randomUUID().toString();
         switch (opNumber){
             case 11:
-            case 23:
-                KIZ_LIST = kizGenerator.generate(KIZ_COUNT);
+            case 22:
+                KIZ_LIST = kizGenerator.generate(configProps.getKizCount());
                 bst = new Basestate(QUERY_ID, KIZ_LIST, PROPS.getProps(opNumber));
                 break;
             case 12:
             case 17:
             case 18:
-            case 22:
             case 25:
             case 28:
             case 33:
@@ -123,17 +175,20 @@ public class BaseTest extends Configuration{
             case 306:
                 bst = new Basestate(QUERY_ID, KIZ_LIST, PROPS.getProps(opNumber));
                 break;
+            case 23:
             case 24:
             case 31:
             case 32:
+                KIZ_LIST_COST = new ArrayList<Kiz>(kizGenerator.addMetadataCost(KIZ_LIST));
                 bst = new Basestate(QUERY_ID, KIZ_LIST_COST, PROPS.getProps(opNumber));
                 break;
             case 65:
-                KIZ_RELABEL = new ArrayList<Kiz>(kizGenerator.createRelabelingList(KIZ_LIST));
+                List<Kiz> KIZ_RELABEL = new ArrayList<Kiz>(kizGenerator.createRelabelingList(KIZ_LIST));
                 bst = new Basestate(QUERY_ID, KIZ_RELABEL, PROPS.getProps(opNumber));
                 KIZ_LIST = new ArrayList<Kiz>(kizGenerator.getNewKizList(KIZ_RELABEL));
                 break;
             case 51:
+                KIZ_LIST_PRICE = new ArrayList<Kiz>(kizGenerator.addMetadataPrice(KIZ_LIST));
                 bst = new Basestate(QUERY_ID, KIZ_LIST_PRICE, PROPS.getProps(opNumber));
                 break;
             default:
@@ -141,10 +196,8 @@ public class BaseTest extends Configuration{
                 break;
         }
 
-        return bst;
+        return jsonAsString(bst);
     }
 
-    public void setMetadataCost(){
-    }
 
 }
