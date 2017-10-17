@@ -32,14 +32,14 @@ import static org.awaitility.Awaitility.await;
  */
 public class BaseTest {
 
-    private static KizGenerator kizGenerator = new KizGenerator();
+    private KizGenerator kizGenerator;
     private static String QUERY_ID = UUID.randomUUID().toString();
     private static List<Kiz> KIZ_LIST;
     private static List<Kiz> KIZ_LIST_COST;
     private static List<Kiz> KIZ_LIST_PRICE;
     private static PropsGenerator PROPS;
     protected final Logger myLog = LoggerFactory.getLogger(getCurrentClassName());
-    protected Configuration configProps = new Configuration();
+    protected Configuration configProps;
 
 
     @Rule
@@ -48,11 +48,10 @@ public class BaseTest {
 
     @Before
     public void setUp() throws Exception {
+        configProps = new Configuration();
         RestAssured.baseURI = configProps.getApiUri();
-        KIZ_LIST = new ArrayList<Kiz>();
-        KIZ_LIST_COST = new ArrayList<Kiz>();
-        KIZ_LIST_PRICE = new ArrayList<Kiz>();
         PROPS = new PropsGenerator(configProps);
+        kizGenerator = new KizGenerator(configProps);
     }
 
 
