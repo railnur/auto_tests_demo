@@ -53,12 +53,12 @@ public class BaseTest {
         RestAssured.baseURI = configProps.getApiUri();
         PROPS = new PropsGenerator(configProps);
         kizGenerator = new KizGenerator(configProps);
-        myLog.info("======================= Run " + name.getMethodName() + " ============================");
+        myLog.info("======================= Run " + name.getMethodName() + " ============================\n");
     }
 
     @After
     public void tearDown() throws Exception {
-        myLog.info("======================= Exit " + name.getMethodName() + " ============================");
+        myLog.info("======================= End " + name.getMethodName() + " ============================\n");
     }
 
     /**
