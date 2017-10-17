@@ -3,14 +3,13 @@ package tests.processes;
 import org.junit.Test;
 import tests.BaseTest;
 
-public class EmissonTests extends BaseTest{
+public class EmissionTests extends BaseTest{
 
     @Test
     public void ContractEmissionTest () throws Exception {
-
         configProps.setOrderType(2);
-        postBasestate(11, true);
 
+        postBasestate(11, true);
     }
 
     @Test

@@ -1,7 +1,7 @@
 package config;
 
-import jsonschemas.basestate.GtdInfo;
-import jsonschemas.basestate.Properties;
+import jsonschemas.basestate.basestate.GtdInfo;
+import jsonschemas.basestate.basestate.Properties;
 
 
 
@@ -17,7 +17,7 @@ public class PropsGenerator{
     /**
      * Создание контейнера Properties по номеру операции трассировки
      * @param opNumber Номер операции
-     * @return Объект jsonschemas.basestate.Properties
+     * @return Объект jsonschemas.basestate.basestate.Properties
      */
     public Properties getProps(int opNumber) {
 

@@ -1,8 +1,8 @@
 package config;
 
-import jsonschemas.basestate.Doc;
-import jsonschemas.basestate.Kiz;
-import jsonschemas.basestate.Metadata;
+import jsonschemas.basestate.basestate.Doc;
+import jsonschemas.basestate.basestate.Kiz;
+import jsonschemas.basestate.basestate.Metadata;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

@@ -1,5 +1,5 @@
 
-package jsonschemas.basestate;
+package jsonschemas.basestate.basestate;
 
 import java.util.HashMap;
 import java.util.Map;

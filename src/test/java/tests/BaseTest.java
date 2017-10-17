@@ -5,8 +5,8 @@ import config.KizGenerator;
 import config.PropsGenerator;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
-import jsonschemas.basestate.Basestate;
-import jsonschemas.basestate.Kiz;
+import jsonschemas.basestate.basestate.Basestate;
+import jsonschemas.basestate.basestate.Kiz;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -17,12 +17,9 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.Callable;
 
 import static config.JsonMapper.jsonAsString;
 import static io.restassured.RestAssured.given;
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.awaitility.Awaitility.await;
 
 
 /**
@@ -36,11 +33,10 @@ public class BaseTest {
     private KizGenerator kizGenerator;
     private static String QUERY_ID = UUID.randomUUID().toString();
     private static List<Kiz> KIZ_LIST;
-    private static List<Kiz> KIZ_LIST_COST;
-    private static List<Kiz> KIZ_LIST_PRICE;
     private static PropsGenerator PROPS;
     protected final Logger myLog = LoggerFactory.getLogger(getCurrentClassName());
     protected Configuration configProps;
+    private VerificationHelper verificationHelper;
 
 
     @Rule
@@ -53,6 +49,7 @@ public class BaseTest {
         RestAssured.baseURI = configProps.getApiUri();
         PROPS = new PropsGenerator(configProps);
         kizGenerator = new KizGenerator(configProps);
+        verificationHelper = new VerificationHelper(myLog, configProps);
         myLog.info("======================= Run " + name.getMethodName() + " ============================\n");
     }
 
@@ -97,67 +94,15 @@ public class BaseTest {
               myLog.info("RESPONSE: " + response.body().asString());
           }
 
-        if (checkType) await().with().pollDelay(configProps.getKizCount(), SECONDS).and().pollInterval(5, SECONDS).await().until(checkAccept(QUERY_ID));
-        else await().with().pollDelay(configProps.getKizCount(), SECONDS).and().pollInterval(5, SECONDS).await().until(checkAccept(QUERY_ID));
+        if (checkType) verificationHelper.checkPositiveResultOfTraceOperation(QUERY_ID, KIZ_LIST, opNumber);
+        else verificationHelper.checkNegativeResultOfTraceOperation(QUERY_ID);
 
 
     }
 
-    /**
-     * Метод, который с определенным промежутком опрашивает ядро
-     * с целью узнать результат прохождения операции.
-     * Принимается на вход метод await() из библиотеки Awaitility
-     * Пример использование:<br>
-     *<pre>
-     *          await().with().pollDelay(configProps.getKizCount(), SECONDS).and().pollInterval(5, SECONDS).await().until(checkAccept(QUERY_ID))
-     *</pre>
-     *
-     * @param queryId Query_id операции
-     * @return true, если операция обработна успешно, false если ответ отрицательный
-     */
-    private Callable<Boolean> checkAccept(final String queryId) throws Exception {
-        return new Callable<Boolean>() {
-            public Boolean call() throws Exception {
-                myLog.info("REQUEST: \nURI: " + RestAssured.baseURI + "/kiz/result/" + QUERY_ID);
-                Response response = given().
-                        contentType("application/json").
-                        when().
-                        get("/kiz/result/" + QUERY_ID);
-                myLog.info("RESPONSE: " + response.body().asString());
-                return response.statusCode() == 200 &&
-                        response.body().jsonPath().getInt("brokenKizCount") == 0 &&
-                        response.body().jsonPath().getInt("code") == 0;
-            }
-        };
-    }
 
-    /**
-     * Метод, который с определенным промежутком опрашивает ядро
-     * с целью узнать результат прохождения операции.
-     * Принимается на вход метод await() из библиотеки Awaitility
-     * Пример использование:<br>
-     *<pre>
-     *          await().with().pollDelay(configProps.getKizCount(), SECONDS).and().pollInterval(5, SECONDS).await().until(checkAccept(QUERY_ID))
-     *</pre>
-     *
-     * @param queryId Query_id операции
-     * @return true, если операция обработна отрицательно, false если операция прошла успешно
-     */
-    private Callable<Boolean> checkReject(final String queryId) throws Exception {
-            return new Callable<Boolean>() {
-                public Boolean call() throws Exception {
-                    myLog.info("REQUEST: \n" + RestAssured.baseURI + "/kiz/result/" + QUERY_ID);
-                    Response response = given().
-                            contentType("application/json").
-                            when().
-                            get("/kiz/result/" + QUERY_ID);
-                    myLog.info("RESPONSE: " + response.body().asString());
-                    return response.statusCode() == 200 &&
-                            response.body().jsonPath().getInt("kizCount") == configProps.getKizCount() &&
-                            response.body().jsonPath().getInt("brokenKizCount") == configProps.getKizCount();
-                }
-            };
-        }
+
+
 
     /**
      * Генерирует тело для методов трассировки на стороне ядра по номеру операции.
@@ -190,7 +135,7 @@ public class BaseTest {
             case 24:
             case 31:
             case 32:
-                KIZ_LIST_COST = new ArrayList<Kiz>(kizGenerator.addMetadataCost(KIZ_LIST));
+                List<Kiz> KIZ_LIST_COST = new ArrayList<Kiz>(kizGenerator.addMetadataCost(KIZ_LIST));
                 bst = new Basestate(QUERY_ID, KIZ_LIST_COST, PROPS.getProps(opNumber));
                 break;
             case 65:
@@ -199,7 +144,7 @@ public class BaseTest {
                 KIZ_LIST = new ArrayList<Kiz>(kizGenerator.getNewKizList(KIZ_RELABEL));
                 break;
             case 51:
-                KIZ_LIST_PRICE = new ArrayList<Kiz>(kizGenerator.addMetadataPrice(KIZ_LIST));
+                List<Kiz> KIZ_LIST_PRICE = new ArrayList<Kiz>(kizGenerator.addMetadataPrice(KIZ_LIST));
                 bst = new Basestate(QUERY_ID, KIZ_LIST_PRICE, PROPS.getProps(opNumber));
                 break;
             default:

@@ -2,16 +2,15 @@ package config;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jsonschemas.basestate.Basestate;
 
-public class JsonMapper {
+public class JsonMapper<T> {
 
 
 
     public JsonMapper(){
     }
 
-    public static String jsonAsString(Basestate body) {
+    public static <T> String jsonAsString(T body) {
         String json = null;
         ObjectMapper mapper = new ObjectMapper();
         try {
