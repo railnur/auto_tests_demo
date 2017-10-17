@@ -4,11 +4,21 @@ import jsonschemas.basestate.GtdInfo;
 import jsonschemas.basestate.Properties;
 
 
+
+
 public class PropsGenerator{
 
     private Properties props;
-    private Configuration configurationProps = new Configuration();
+    private Configuration configurationProps;
+    public PropsGenerator(Configuration configurationProps){
+        this.configurationProps = configurationProps;
+    }
 
+    /**
+     * Создание контейнера Properties по номеру операции трассировки
+     * @param opNumber Номер операции
+     * @return Объект jsonschemas.basestate.Properties
+     */
     public Properties getProps(int opNumber) {
 
         props = new Properties(configurationProps.getSubjectIdRf(), configurationProps.getOpDate());

@@ -54,10 +54,12 @@ public class Configuration {
     private int WITHDRAWAL_TYPE = 6;
     private int CONTROL_TYPE = 2;
     private int STORAGE_TYPE =1;
-    private int[] SEQUENCE = {11, 12, 17};
+    private int[] SEQUENCE = {11, 12, 31, 32};
     private int REFUSED_BY = 1;
     private Properties prop = new Properties();
     private InputStream input = null;
+    private int VAT_VALUE = 0;
+    private int COST = 1000;
 
     public Configuration(){
         readConfig();
@@ -112,6 +114,8 @@ public class Configuration {
             setControlType(Integer.parseInt(prop.getProperty("CONTROL_TYPE")));
             setStorageType(Integer.parseInt(prop.getProperty("STORAGE_TYPE")));
             setRefusedBy(Integer.parseInt(prop.getProperty("REFUSED_BY")));
+            setCost(Integer.parseInt(prop.getProperty("COST")));
+            setVatValue(Integer.parseInt(prop.getProperty("VAT_VALUE")));
 
 
         } catch (IOException ex) {
@@ -413,5 +417,21 @@ public class Configuration {
 
     public  void setPackingId(String packingId) {
         PACKING_ID = packingId;
+    }
+
+    public int getVatValue() {
+        return VAT_VALUE;
+    }
+
+    public void setVatValue(int VAT_VALUE) {
+        this.VAT_VALUE = VAT_VALUE;
+    }
+
+    public int getCost() {
+        return COST;
+    }
+
+    public void setCost(int COST) {
+        this.COST = COST;
     }
 }

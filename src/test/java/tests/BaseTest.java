@@ -7,7 +7,10 @@ import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import jsonschemas.basestate.Basestate;
 import jsonschemas.basestate.Kiz;
+import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
+import org.junit.rules.TestName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,25 +33,33 @@ import static org.awaitility.Awaitility.await;
  */
 public class BaseTest {
 
-    private static KizGenerator kizGenerator = new KizGenerator();
+    private KizGenerator kizGenerator;
     private static String QUERY_ID = UUID.randomUUID().toString();
     private static List<Kiz> KIZ_LIST;
     private static List<Kiz> KIZ_LIST_COST;
     private static List<Kiz> KIZ_LIST_PRICE;
     private static PropsGenerator PROPS;
-    private final Logger myLog = LoggerFactory.getLogger(this.getClass());
-    private Configuration configProps = new Configuration();
+    protected final Logger myLog = LoggerFactory.getLogger(getCurrentClassName());
+    protected Configuration configProps;
+
+
+    @Rule
+    public TestName name = new TestName();
 
 
     @Before
     public void setUp() throws Exception {
+        configProps = new Configuration();
         RestAssured.baseURI = configProps.getApiUri();
-        KIZ_LIST = new ArrayList<Kiz>();
-        KIZ_LIST_COST = new ArrayList<Kiz>();
-        KIZ_LIST_PRICE = new ArrayList<Kiz>();
-        PROPS = new PropsGenerator();
+        PROPS = new PropsGenerator(configProps);
+        kizGenerator = new KizGenerator(configProps);
+        myLog.info("======================= Run " + name.getMethodName() + " ============================\n");
     }
 
+    @After
+    public void tearDown() throws Exception {
+        myLog.info("======================= End " + name.getMethodName() + " ============================\n");
+    }
 
     /**
      * Метод, который формирует и отправляет запрос методов трассировки на строну ядра
@@ -107,7 +118,7 @@ public class BaseTest {
     private Callable<Boolean> checkAccept(final String queryId) throws Exception {
         return new Callable<Boolean>() {
             public Boolean call() throws Exception {
-                myLog.info("REQUEST: \n" + RestAssured.baseURI + "/kiz/result/" + QUERY_ID);
+                myLog.info("REQUEST: \nURI: " + RestAssured.baseURI + "/kiz/result/" + QUERY_ID);
                 Response response = given().
                         contentType("application/json").
                         when().
@@ -200,4 +211,16 @@ public class BaseTest {
     }
 
 
+    /**
+     * Получить имя класса<br/>
+     * Вспомогательный метод, необходим для того чтобы в каждом новом тестовом классе не объявлять логгер
+     * @return String, имя класса
+     */
+    private static String getCurrentClassName(){
+        try {
+            throw new RuntimeException();
+        } catch (RuntimeException e){
+            return e.getStackTrace()[1].getClassName();
+        }
+    }
 }

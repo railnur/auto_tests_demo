@@ -13,11 +13,19 @@ import java.util.Random;
 
 public class KizGenerator {
 
-    private List<Doc> docs = new ArrayList<Doc>();
-    private Doc doc = new Doc(1,"000000001","2017-08-09");
+    private List<Doc> docs;
+    private Doc doc;
     private Metadata metadata_price;
-    private Metadata metadata_cost = new Metadata(0, 100033);
-    public KizGenerator(){
+    private Metadata metadata_cost;
+    private Configuration configurationProps;
+
+    public KizGenerator(Configuration configurationProps){
+        this.doc = new Doc(configurationProps.getDocType(),configurationProps.getDocNum(),configurationProps.getDocDate());
+        this.docs = new ArrayList<Doc>();
+        this.docs.add(doc);
+        this.configurationProps = configurationProps;
+        this.metadata_price  = new Metadata(configurationProps.getVatValue(), configurationProps.getCost(), docs);
+        this.metadata_cost = new Metadata(configurationProps.getVatValue(), configurationProps.getCost());
     }
 
     public List<Kiz> generate (int count){
@@ -49,8 +57,6 @@ public class KizGenerator {
 
         List<Kiz> kizListCost = new ArrayList<Kiz>();
         kizListCost.addAll(copyKiz(kizList));
-        docs.add(doc);
-        metadata_price = new Metadata(0, 100033, docs);
         for (Kiz kiz : kizListCost){
             kiz.setMetadata(metadata_price);
         }
