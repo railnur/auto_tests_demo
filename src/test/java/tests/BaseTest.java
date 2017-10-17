@@ -7,6 +7,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import jsonschemas.basestate.Basestate;
 import jsonschemas.basestate.Kiz;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TestName;
@@ -52,8 +53,13 @@ public class BaseTest {
         RestAssured.baseURI = configProps.getApiUri();
         PROPS = new PropsGenerator(configProps);
         kizGenerator = new KizGenerator(configProps);
+        myLog.info("======================= Run " + name.getMethodName() + " ============================");
     }
 
+    @After
+    public void tearDown() throws Exception {
+        myLog.info("======================= Exit " + name.getMethodName() + " ============================");
+    }
 
     /**
      * Метод, который формирует и отправляет запрос методов трассировки на строну ядра

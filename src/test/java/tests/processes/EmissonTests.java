@@ -6,25 +6,27 @@ import tests.BaseTest;
 public class EmissonTests extends BaseTest{
 
     @Test
-    public void ContractEmissonTest () throws Exception {
-        myLog.info("======================= Run " + name.getMethodName() + " ============================");
+    public void ContractEmissionTest () throws Exception {
+
         configProps.setOrderType(2);
         postBasestate(11, true);
-        myLog.info("======================= Exit " + name.getMethodName() + " ============================");
+
     }
 
     @Test
-    public void OwnerEmissonTest () throws Exception {
-        myLog.info("======================= Run " + name.getMethodName() + " ============================");
+    public void OwnerEmissionTest () throws Exception {
         configProps.setOrderType(1);
         postBasestate(11, true);
-        myLog.info("======================= Exit " + name.getMethodName() + " ============================");
     }
 
     @Test
-    public void ForeignEmissonTest () throws Exception {
-        myLog.info("======================= Run " + name.getMethodName() + " ============================");
+    public void ForeignEmissionTest () throws Exception {
         postBasestate(22, true);
-        myLog.info("======================= Exit " + name.getMethodName() + " ============================");
+    }
+
+    @Test
+    public void RelabelEmissionTest () throws Exception{
+        postBasestate(11, true);
+        postBasestate(65, true);
     }
 }
