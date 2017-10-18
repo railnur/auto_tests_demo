@@ -46,6 +46,7 @@ public class PropsGenerator{
                 temp = configurationProps.getSubjectIdRf();
                 configurationProps.setSubjectIdRf(configurationProps.getOwnerId());
                 configurationProps.setOwnerId(temp);
+                configurationProps.setConsigneeId(temp);
                 props.setVendorId(configurationProps.getOwnerId());
                 props.setDocNum(configurationProps.getDocNum());
                 props.setDocDate(configurationProps.getDocDate());

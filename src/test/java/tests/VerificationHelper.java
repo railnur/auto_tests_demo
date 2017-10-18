@@ -7,9 +7,7 @@ import jsonschemas.basestate.basestate.Kiz;
 import org.slf4j.Logger;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Callable;
 
 import static io.restassured.RestAssured.given;
@@ -32,8 +30,11 @@ public class VerificationHelper {
 
     public void checkPositiveResultOfTraceOperation (String queryId, List<Kiz> kizList, int opNumber) throws Exception {
         await().with().pollDelay(configProps.getKizCount(), SECONDS).and().pollInterval(5, SECONDS).await().until(checkAccept(queryId));
-        for (Kiz kiz : kizList){
-            checkSgtinStatus(kiz.getSign(), opNumber);
+        if (opNumber != 65) {
+            for (Kiz kiz : kizList) {
+                checkSgtinStatus(kiz.getSign(), opNumber);
+                checkSgtinOwner(kiz.getSign(), opNumber);
+            }
         }
     }
 
@@ -43,14 +44,32 @@ public class VerificationHelper {
 
     }
 
-
+    /**
+     * Метод для проверки того, что КиЗ получил нужный статус после оперделенной операции</br>
+     * @param sgtin КиЗ
+     * @param opNumber Номер операции
+     */
     private void checkSgtinStatus(String sgtin, int opNumber) throws IOException {
-        KizFilterHelper kizFilterHelper = new KizFilterHelper(myLog);
+        KizFilterHelper kizFilterHelper = new KizFilterHelper(myLog, sgtin);
         String actualStatus = kizFilterHelper.getSgtinStatus(sgtin);
-        String expectedStatus = statusMap().get(opNumber);
+        String expectedStatus = statusMap(opNumber);
 
         assertThat(actualStatus, equalTo(expectedStatus));
     }
+
+    /**
+     * Метод для проверки того, что у КиЗа корректный владелец после оперделенной операции</br>
+     * @param sgtin КиЗ
+     * @param opNumber Номер операции
+     */
+    private void checkSgtinOwner(String sgtin, int opNumber) throws IOException {
+        KizFilterHelper kizFilterHelper = new KizFilterHelper(myLog, sgtin);
+        String actualOwner = kizFilterHelper.getSgtinOwner(sgtin);
+        String expectedOwner = getOwner(opNumber);
+
+        assertThat(actualOwner, equalTo(expectedOwner));
+    }
+
 
     /**
      * Метод, который с определенным промежутком опрашивает ядро
@@ -108,16 +127,66 @@ public class VerificationHelper {
         };
     }
 
-    private Map<Integer, String> statusMap (){
-        Map<Integer, String> statusMap = new HashMap<Integer, String>();
-        statusMap.put(11, "marked");
-        if (configProps.getOrderType() == 1) statusMap.put(12, "in_circulation");
-        else if (configProps.getOrderType() == 2) statusMap.put(12, "released_contract");
-        statusMap.put(17, "transfered_to_owner");
-        statusMap.put(18, "in_circulation");
-        statusMap.put(22, "released_foreign");
-        statusMap.put(31, "in_realization");
-        statusMap.put(32, "in_circulation");
-        return statusMap;
+
+    /**
+     *
+     * @return
+     */
+    private String statusMap (int opNumber){
+
+        switch (opNumber){
+            case 11: return "marked";
+            case 12 :
+                if (configProps.getOrderType() == 1) return "in_circulation";
+                else return "released_contract";
+            case 17: return "transfered_to_owner";
+            case 18: return "in_circulation";
+            case 22: return "released_foreign";
+            case 23: return "shipped";
+            case 24: return "arrived";
+            case 25: return "declared";
+            case 31:
+                if (configProps.getAcceptType() == 1) return "in_realization";
+                else return "in_circulation";
+            case 32:
+                if (configProps.getAcceptType() == 1) return "in_circulation";
+                else return "in_realization";
+            case 51: return "in_sale";
+            case 52:
+                if (configProps.getWithdrawalType() < 500) return "out_of_circulation";
+                else return "reexported";
+            case 301:
+                if (configProps.getControlType() == 1 || configProps.getControlType() == 3)  return "out_of_circulation";
+                else if (configProps.getControlType() == 2) return "lp_sampled";
+            case 305: return "in_discount_prescription_sale";
+            default: return null;
+        }
+    }
+
+    private String getOwner (int opNumber){
+
+        switch (opNumber){
+            case 11:
+            case 12:
+            case 17:
+            case 18:
+            case 25:
+            case 51:
+            case 52:
+            case 301:
+            case 305:
+                return configProps.getSubjectIdRf();
+            case 22:
+            case 23:
+            case 24:
+                return configProps.getSubjectIdForeign();
+            case 31:
+                if (configProps.getAcceptType() == 1) return configProps.getSubjectIdRf();
+                else return configProps.getConsigneeId();
+            case 32:
+                if (configProps.getAcceptType() == 1) return configProps.getSubjectIdRf();
+                else return configProps.getConsigneeId();
+            default: return null;
+        }
     }
 }
